@@ -3,9 +3,23 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import TemplateView
+from rest_framework import viewsets
 
 from .models import Post
 from .forms import PostForm
+
+
+class PostViewSet(viewsets.ViewSet):
+
+    def create(self,request):
+        pass
+
+    def retrieve(self, request, pk):
+        pass
+
+    def list(self, request):
+        pass
+
 
 
 class PostListView(TemplateView):
