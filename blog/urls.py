@@ -9,7 +9,7 @@ from blog.views import PostViewSet
 router = DefaultRouter()
 router.register('posts', PostViewSet, basename='post')
 urlpatterns= router.urls
-urlpatterns= router.urls
+
 
 
 #urlpatterns = [

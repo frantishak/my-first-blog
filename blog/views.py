@@ -16,15 +16,34 @@ class PostViewSet(viewsets.ViewSet):
     renderer_classes = [TemplateHTMLRenderer]
 
     def create(self,request):
-        pass
+        data = request.data
+        serializer = PostSerializer(data=data)
+        if serializer.is_valid():
+            post = serializer.save(
+                author = request.user,
+                published_date=timezone.now()
+            )
+            return self.retrieve(request, post.id)
+        else:
+            return Response({'form':serializer}, template_name='blog/post_edit.html')
+
+
+
 
     def retrieve(self, request, pk):
-        pass
+        post = get_object_or_404(Post, pk=pk)
+        serializer = PostSerializer(post)
+        return Response({'post': serializer.data}, template_name='blog/post_detail.html')
 
     def list(self, request):
-        posts = Post.objects.all()
-        serializer = PostSerializer(posts, many=True)
-        return Response({'posts': serializer.data}, template_name='blog/post_list.html')
+        edit = request.query_params.get('edit', False)
+        if edit:
+            serializer=PostSerializer()
+            return Response({'form': serializer}, template_name='blog/post_edit.html')
+        else:
+            posts = Post.objects.all()
+            serializer = PostSerializer(posts, many=True)
+            return Response({'posts': serializer.data}, template_name='blog/post_list.html')
 
 
 

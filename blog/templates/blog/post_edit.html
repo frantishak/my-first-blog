@@ -1,9 +1,10 @@
 {% extends 'blog/base.html' %}
+{% load rest_framework%}
 
 {% block content%}
 	<h1>New post</h1>
 	<form method="POST" class="post-form">{% csrf_token %}
-		{{ form.as_p }}
+		{% render_form form %}
 		<button type="submit" class="save btn btn-default">Save</button>
 	</form>
 {% endblock %}
