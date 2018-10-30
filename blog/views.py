@@ -4,12 +4,16 @@ from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import TemplateView
 from rest_framework import viewsets
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.response import Response
 
+from blog.templates.serializers import PostSerializer
 from .models import Post
 from .forms import PostForm
 
 
 class PostViewSet(viewsets.ViewSet):
+    renderer_classes = [TemplateHTMLRenderer]
 
     def create(self,request):
         pass
@@ -18,7 +22,9 @@ class PostViewSet(viewsets.ViewSet):
         pass
 
     def list(self, request):
-        pass
+        posts = Post.objects.all()
+        serializer = PostSerializer(posts, many=True)
+        return Response({'posts': serializer.data}, template_name='blog/post_list.html')
 
 
 
