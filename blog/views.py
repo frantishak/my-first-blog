@@ -45,6 +45,9 @@ class PostViewSet(viewsets.ViewSet):
             serializer = PostSerializer(posts, many=True)
             return Response({'posts': serializer.data}, template_name='blog/post_list.html')
 
+    def update(self, request,pk):
+        pass
+
 
 
 class PostListView(TemplateView):
