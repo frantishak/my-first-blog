@@ -16,6 +16,7 @@ class PostViewSet(viewsets.ViewSet):
     renderer_classes = [TemplateHTMLRenderer]
 
     def create(self,request):
+        print('---------------', request)
         data = request.data
         serializer = PostSerializer(data=data)
         if serializer.is_valid():
