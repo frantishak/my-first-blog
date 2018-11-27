@@ -51,7 +51,7 @@ class BlogAPITestCase(TestCase):
 
     def test_posts_create(self):
         data = {
-           'title':'us323er',
+           'title':'',
             'text': 'T2323itle1'
         }
 

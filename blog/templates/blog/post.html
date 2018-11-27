@@ -1,0 +1,8 @@
+
+<div class="post">
+	<div class="date">
+		<p>published: {{ post.published_date}}</p>
+	</div>
+	<h1><a href="{% url 'post-detail' pk=post.id%}">{{ post.title }}</a></h1>
+	<p>{{ post.text|linebreaks }}</p>
+</div>
