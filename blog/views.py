@@ -1,4 +1,7 @@
+from datetime import timedelta
 from django import views
+from django.core.checks import messages
+from django.core.mail import send_mail
 from django.shortcuts import render
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
@@ -101,3 +104,62 @@ class PostEditView(views.View):
         form = PostForm(instance=post)
         return render(request, self.template_name, {'form': form})
 
+class RestorePasswordView(views.View):
+    templete_name ='password/restor_password.html'
+
+    def get(self, request):
+        form = RestorePasswordForm()
+        return render(request, self.templete_name, {'form':form})
+
+    def post(self, request):
+        form = RestorePasswordForm(request.POST)
+        if form.is_valid():
+            email = form.clesn_date['email']
+            user = get_object_or_404(User, email=email)
+            token = self.generate_token()
+            resore_token = RestorePasswordToken(
+                token = token,
+                expire_date = timezone.now()+timedelta(day=3),
+                user = user
+            )
+            resore_token.seve()
+
+            send_mail(
+                subject='Ссылка на восстанолвление пароля',
+                message=self.create_restore_email_message(resore_token),
+                from_email='blog@mail.com',
+                recipient_list=[email]
+            )
+            messages.success(request,'Вам отправленна ссылка на изменение пароля на почту.')
+
+class ResetPasswordView(views.View):
+    temolete_name ='password/reset_password.html'
+
+    def get_context_date(self):
+        return {'form': ResetPasswordForm()}
+
+    def get(self, request):
+        self.get_valid_token(request)
+        super().get(request)
+
+    def post(self,request):
+        token = rquest.GET['token']
+        restore_token = get_object_or_404(RestorePasswordToken)
+        if not restore_token.is_valid:
+            form = ResetPasswordForm(request.POST)
+            if form.is_valid():
+                user = restore_token.user
+                user.set_password(form.cleaned_data['password'])
+                return redirect(request, 'admin/')
+        else:
+            messages.error('Срока ссылки истек')
+
+    def get_valid_token(self,request):
+        token = rquest.GET['token']
+        restore_token = get_object_or_404(RestorePasswordToken)
+        if restore_token.is_expired:
+            raise Http404('Токен')
+        return restore_token
+
+
+        return render(request, self.temolete_name, {'form': ResetPasswordForm})

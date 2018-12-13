@@ -15,3 +15,14 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+class RestorePasswordToken(models.Model):
+    token = models.CharField(max_length=32)
+    expier_date = models.DateTimeField()
+    user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
+
+    @property
+    def is_expired(self):
+        return self.expier_date > timezone.now()
+
+
